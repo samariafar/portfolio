@@ -1,0 +1,70 @@
+title = "Sam Ariafar — Tech Wizard"
+author = "Sam Ariafar"
+
+# The URL the site will be built for
+base_url = "https://samariafar.dev"
+
+default_language = "en"
+
+theme = "terminus"
+
+minify_html = true
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+generate_feeds = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = true
+
+
+[markdown]
+render_emoji = true
+github_alerts = true
+smart_punctuation = true
+
+[markdown.highlighting]
+theme = "monokai"
+
+[extra]
+# Put all your custom variables here
+
+stylesheets = ["overrides.css"]
+
+header_title = "Sam Ariafar"
+
+favicon = "images/favicon.png"
+
+copyright = "Copyright © 2008–$YEAR $AUTHOR, All rights reserved."
+
+main_menu = [
+    { name = "Resume", url = "resume", trailing_slash = true, submenu = [
+      { name = "Download", url = "/sam-ariafar.pdf", download = true, mobile_only = true }
+    ] },
+    { name = "Publications", url = "publications", trailing_slash = true },
+    { name = "Projects", url = "projects", trailing_slash = true },
+    { name = "Services", url = "services", trailing_slash = true },
+    { name = "Blog", url = "blog", trailing_slash = true },
+]
+
+socials = [
+    { name = "email", url = "https://samariafar.link" },
+    { name = "github", url = "https://github.com/samariafar" },
+]
+
+# nanogallery2 is loaded from jsDelivr; it also needs inline style attributes
+# (per-thumb sizing) and inline <style> elements injected by jQuery, plus the
+# data: URI used as a loading-placeholder GIF, and the icon font shipped with
+# nanogallery2's bundled CSS.
+[extra.content_security_policy]
+enable = true
+allowed_domains = [
+    { directive = "base-uri", domains = ["'self'"] },
+    { directive = "form-action", domains = ["'self'"] },
+    { directive = "img-src", domains = ["'self'", "data:", "https://skillicons.dev"] },
+    { directive = "font-src", domains = ["'self'", "https://cdn.jsdelivr.net"] },
+    { directive = "script-src-elem", domains = ["'self'", "https://cdn.jsdelivr.net"] },
+    { directive = "style-src-attr", domains = ["'self'", "'unsafe-inline'"] },
+    { directive = "style-src-elem", domains = ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"] },
+]
