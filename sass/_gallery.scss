@@ -1,0 +1,30 @@
+// Local overrides for nanogallery2.
+// Layout is left to the library (touching its absolute-positioned thumbnails
+// via CSS breaks initialization). Only safe visual tweaks live here.
+
+// Hide the lightbox bottom toolbar — the library's
+// `viewerToolbar.display: false` option is ignored by v3.0.5.
+.nGY2Viewer {
+  .toolbarBackground,
+  .toolbarContainer,
+  .nGY2ViewerLogo {
+    display: none !important;
+  }
+}
+
+// Pagination prev/next buttons — match theme accent.
+.nGY2NavigationbarItem {
+  padding: 4px 5px !important;
+  border: 1px solid var(--accent-color, #eec35e);
+  border-radius: 3px;
+  color: var(--accent-color, #eec35e);
+  transition: transform 150ms ease;
+
+  i {
+    color: var(--accent-color, #eec35e);
+  }
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}

@@ -1,0 +1,80 @@
+{#-
+  Justified-grid + lightbox image gallery via nanogallery2.
+  Iterates colocated assets of the surrounding page or section, filters to the
+  images under `match`, generates thumbnails with Zola's `resize_image`, and
+  emits the markup nanogallery2 expects.
+
+  All arguments are optional:
+    match        substring filter on asset path        (default "images/")
+    row_height   target thumbnail row height px        (default 250)
+    margins      gutter between thumbnails px          (default 5)
+    thumb_width  thumbnail max width px                (default 600)
+    thumb_height thumbnail max height px               (default 600)
+    sort         nanogallery2 thumbnailDisplayOrder    (default "sortDsc")
+    theme        "dark" or "light"                     (default "dark")
+    load_assets  inject jQuery + nanogallery2 from jsDelivr (default true).
+                 Set false on additional galleries on the same page so the
+                 libraries are fetched only once.
+-#}
+{%- set match = match | default(value="images/") -%} {%- set row_height =
+row_height | default(value=250) -%} {%- set margins = margins | default(value=5)
+-%} {%- set thumb_w = thumb_width | default(value=600) -%} {%- set thumb_h =
+thumb_height | default(value=600) -%} {%- set sort = sort |
+default(value="sortDsc") -%} {%- set theme = theme | default(value="dark") -%}
+{%- set load_assets = load_assets | default(value=true) -%} {%- set gallery_id =
+"ngg-" ~ nth -%} {%- set exts = ["jpg", "jpeg", "png", "webp", "avif", "gif"]
+-%} {%- if section is defined -%} {%- set assets = section.assets -%} {%- elif
+page is defined -%} {%- set assets = page.assets -%} {%- else -%} {%- set assets
+= [] -%} {%- endif -%}
+
+<div
+    id="{{ gallery_id }}"
+    data-nanogallery2='{
+       "thumbnailHeight": {{ row_height }},
+       "thumbnailWidth": "auto",
+       "thumbnailAlignment": "fillWidth",
+       "galleryLastRowFull": true,
+       "thumbnailGutterWidth": {{ margins }},
+       "thumbnailGutterHeight": {{ margins }},
+       "thumbnailDisplayOrder": "{{ sort }}",
+       "thumbnailLabel": { "display": false },
+       "thumbnailDisplayOutsideScreen": false,
+       "galleryDisplayMode": "pagination",
+       "galleryMaxRows": 3,
+       "galleryTheme": "{{ theme }}",
+       "viewerTheme": "{{ theme }}",
+       "viewerGallery": "none",
+       "viewerZoom": false,
+       "viewerTools": {
+         "topLeft": "pageCounter, label",
+         "topRight": "fullscreenButton, closeButton"
+       }
+     }'
+>
+    {%- for asset in assets -%} {%- if asset is containing(match) -%} {%- set
+    ext = asset | split(pat=".") | last | lower -%} {%- if ext in exts -%} {%-
+    set thumb = resize_image(path=asset, width=thumb_w, height=thumb_h,
+    op="fit") -%}
+    <a
+        href="{{ get_url(path=asset) | safe }}"
+        data-ngthumb="{{ thumb.url | safe }}"
+        data-ngthumbwidth="{{ thumb.width }}"
+        data-ngthumbheight="{{ thumb.height }}"
+    ></a>
+    {%- endif -%} {%- endif -%} {%- endfor -%}
+</div>
+
+{%- if load_assets %}
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/nanogallery2@3.0.5/dist/css/nanogallery2.min.css"
+/>
+<script
+    defer
+    src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"
+></script>
+<script
+    defer
+    src="https://cdn.jsdelivr.net/npm/nanogallery2@3.0.5/dist/jquery.nanogallery2.min.js"
+></script>
+{%- endif %}
