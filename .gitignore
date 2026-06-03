@@ -1,0 +1,21 @@
+# DevTools
+/.idea/
+/.vscode/
+
+# Sub-repositories
+/docs/wiki/
+/themes/*/
+
+# Environment Files
+/.direnv/
+
+# Builds
+/public/
+/static/processed_images/
+
+# Misc.
+.DS_Store
+Thumbs.db
+desktop.ini
+*.sw?
+*~
