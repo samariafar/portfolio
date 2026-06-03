@@ -1,0 +1,22 @@
+# DevTools
+/.idea/
+/.vscode/
+/.claude/
+
+# Sub-repositories
+/docs/wiki/
+/themes/terminus/
+
+# Environment Files
+/.direnv/
+
+# Zola
+/public/
+/static/processed_images/
+
+# Misc.
+.DS_Store
+Thumbs.db
+desktop.ini
+*.sw?
+*~
