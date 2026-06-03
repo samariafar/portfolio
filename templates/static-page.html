@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{%- block title -%}
+{{ page.title }} | {{ config.title }}
+{%- endblock -%}
+
+{%- block description -%}
+    {%- if page.description %}
+    <meta name="description" content="{{ page.description | markdown(inline=true) | striptags }}">
+    {%- elif config.description %}
+    <meta name="description" content="{{ config.description | safe }}">
+    {%- endif %}
+{%- endblock -%}
+
+{%- block translations -%}
+    {%- for translation in page.translations -%}
+    <link rel="alternate" hreflang="{{ translation.lang }}" href="{{ translation.permalink | safe }}">
+    {% endfor -%}
+{%- endblock -%}
+
+{%- block main -%}
+<article class="content">
+    <header>
+        <h1 class="post-title"><a href="{{ page.permalink | safe }}">{{ page.title }}</a></h1>
+    </header>
+    {{ page.content | safe }}
+</article>
+{%- endblock -%}
