@@ -1,0 +1,18 @@
+<div class="header-container">
+    <span class="header-logo-container">
+        {% filter indent -%}{%- filter indent -%}
+        {% include "partials/logo.html" %}
+        {%- endfilter -%}{%- endfilter %}
+    </span>
+    {%- if page.extra.action_button -%}
+    {%- set btn = page.extra.action_button -%}
+    {%- set href = btn.href -%}
+    {%- set label = btn.label -%}
+    {%- set icon = btn.icon -%}
+    {%- set download = btn.download -%}
+    <div class="header-action">{%- include "shortcodes/linked_button.html" -%}</div>
+    {%- endif -%}
+</div>
+{% if config.extra.main_menu -%}
+{% include "partials/menu.html" %}
+{%- endif %}
