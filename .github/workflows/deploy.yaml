@@ -1,0 +1,56 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Required GitHub secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN  — token with "Cloudflare Pages: Edit" permission
+#   CLOUDFLARE_ACCOUNT_ID — your Cloudflare account ID (visible in any zone overview)
+#
+# Required Cloudflare setup (one-time, in CF dashboard):
+#   Workers & Pages → Create application → Pages → Direct Upload
+#     project name: portfolio   (must match `--project-name` below)
+#
+# Note: pages:write + id-token:write are needed because the official Zola
+# action (getzola/github-pages) bundles actions/upload-pages-artifact. That
+# upload happens but its output is unused — we deploy `public/` to CF via
+# wrangler. The wasted artifact upload is the cost of using the official
+# action's clean build + install path.
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Clone terminus theme
+        run: git clone --depth 1 https://github.com/ebkalderon/terminus.git themes/terminus
+
+      - name: Get latest Zola version
+        id: zola
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "tag=$(gh release view --repo getzola/zola --json tagName -q .tagName)" >> "$GITHUB_OUTPUT"
+
+      - name: Build Zola + upload Pages artifact
+        uses: getzola/github-pages@v1
+        with:
+          zola_version: ${{ steps.zola.outputs.tag }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy public --project-name=portfolio --branch=${{ github.ref_name }}
