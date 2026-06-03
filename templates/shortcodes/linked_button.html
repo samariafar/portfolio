@@ -1,0 +1,3 @@
+{%- set icon_name = icon | default(value="") -%}
+{%- set link_target = target | default(value="_blank") -%}
+<a href="{{ href }}" target="{{ link_target }}"{% if download %} download{% endif %}><button>{%- if icon_name -%}{%- set name = icon_name -%}{%- include "shortcodes/icon.html" -%}{%- endif -%}{{ label }}</button></a>
