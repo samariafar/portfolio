@@ -38,6 +38,15 @@ article.post:first-of-type {
   font-weight: normal;
 }
 
+.footer .copyright {
+  font-size: 0.95em;
+}
+
+.footer .socials {
+  padding-top: 25px;
+  padding-bottom: 0;
+}
+
 blockquote:not([class*="markdown-alert"]) {
   border: 4px double var(--accent-color);
   padding: 15px 40px;
