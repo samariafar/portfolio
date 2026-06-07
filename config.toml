@@ -61,10 +61,11 @@ socials = [
 enable = true
 allowed_domains = [
     { directive = "base-uri", domains = ["'self'"] },
+    { directive = "connect-src", domains = ["'self'", "https://openpanel.dev", "https://*.openpanel.dev"] },
     { directive = "form-action", domains = ["'self'"] },
     { directive = "img-src", domains = ["'self'", "data:", "https://skillicons.dev"] },
     { directive = "font-src", domains = ["'self'", "https://cdn.jsdelivr.net"] },
-    { directive = "script-src-elem", domains = ["'self'", "https://cdn.jsdelivr.net"] },
+    { directive = "script-src-elem", domains = ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://openpanel.dev", "https://*.openpanel.dev"] },
     { directive = "style-src-attr", domains = ["'self'", "'unsafe-inline'"] },
     { directive = "style-src-elem", domains = ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"] },
 ]
