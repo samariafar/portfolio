@@ -29,8 +29,21 @@
 
 {%- set pages = paginator.pages | default(value=section.pages) -%}
 {%- if pages | length > 0 -%}
-{%- for page in pages -%}
+{%- for page in pages %}
+{%- if page.extra.social_media_image.path %}
+{%- set thumb_path = page.colocated_path ~ page.extra.social_media_image.path -%}
+{%- set thumb = resize_image(path=thumb_path, width=360, height=189, op="fit") %}
+<div class="post-card has-cover">
+    <a class="post-card-cover" href="{{ page.permalink | safe }}" tabindex="-1" aria-hidden="true">
+        <img src="{{ thumb.url | safe }}" width="{{ thumb.width }}" height="{{ thumb.height }}" alt="" loading="lazy">
+    </a>
+    <div class="post-card-body">
+        {{ post_macros::excerpt(page=page) | indent | safe }}
+    </div>
+</div>
+{%- else %}
 {{ post_macros::excerpt(page=page) }}
+{%- endif %}
 {% endfor -%}
 {% include "partials/pagination.html" %}
 {%- elif section.extra.empty_message -%}

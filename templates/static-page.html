@@ -23,6 +23,13 @@
     <header>
         <h1 class="post-title"><a href="{{ page.permalink | safe }}">{{ page.title }}</a></h1>
     </header>
+    {%- if page.extra.social_media_image.path %}
+    {%- set hero_path = page.colocated_path ~ page.extra.social_media_image.path -%}
+    {%- set hero = resize_image(path=hero_path, width=1200, height=630, op="fit") %}
+    <figure class="post-cover">
+        <img src="{{ hero.url | safe }}" width="{{ hero.width }}" height="{{ hero.height }}" alt="{{ page.extra.social_media_image.alt_text | default(value='') }}" loading="eager" fetchpriority="high">
+    </figure>
+    {%- endif %}
     {{ page.content | safe }}
 </article>
 {%- endblock -%}
