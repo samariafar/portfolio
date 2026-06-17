@@ -6,6 +6,7 @@ SHELL := $(shell command -v bash)
 .PHONY: help start resume
 
 PDF_IMAGE := pdf-builder
+DARK ?=
 
 help: ## Show available commands
 	echo -e "\nUsage:\n"
@@ -17,7 +18,7 @@ start: ## Run the Zola dev server with live reload
 
 resume: ## Build resume PDF(s) from content/resume/index*.md into static/
 	docker build -t $(PDF_IMAGE) tools/pdf
-	docker run --rm --user "$$(id -u):$$(id -g)" -v "$(CURDIR)":/work -w /work $(PDF_IMAGE) bash tools/pdf/generate.sh
+	docker run --rm --user "$$(id -u):$$(id -g)" -v "$(CURDIR)":/work -w /work $(PDF_IMAGE) bash tools/pdf/generate.sh$(if $(DARK), --dark,)
 
 %:
 	:

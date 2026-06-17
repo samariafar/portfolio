@@ -3,12 +3,23 @@
 #
 # Runs from the project root (so it can read content/resume/index*.md and write
 # directly to static/). Outputs:
-#   en   → static/sam-ariafar.pdf
-#   <l>  → static/sam-ariafar.<l>.pdf
+#   en            → static/sam-ariafar.pdf
+#   en --dark     → static/sam-ariafar.pdf   (dark mode, same path)
+#   <l>           → static/sam-ariafar.<l>.pdf
+#   <l> --dark    → static/sam-ariafar.<l>.pdf
 set -euo pipefail
 
 BASE="tools/pdf"
 DEFAULT_LANG="en"
+DARK=false
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		--dark) DARK=true ;;
+		*) echo "Unknown option: $1" >&2; exit 1 ;;
+	esac
+	shift
+done
 
 HEADER="$BASE/head.tex"
 TEMPLATE="$BASE/template.tex"
@@ -46,6 +57,8 @@ for file in content/resume/index*.md; do
 			\fontsize{#1}{\lineHeight}\selectfont
 		}
 		\newcommand{\qrCodeName}{qr-code-dark}
+		\newcommand{\darkSuffix}{}
+		\newcommand{\qrActionColor}{white}
 	EOF
 
 	[[ -f "$BASE/templates/fonts.${lang}.tex" ]] && fonts="fonts.${lang}" || fonts="fonts"
@@ -54,6 +67,21 @@ for file in content/resume/index*.md; do
 		"$BASE/templates/${fonts}.tex" \
 		"$BASE/templates/styles.tex" \
 		"$BASE/templates/profile.tex" >> "$HEADER"
+
+	# Dark-mode overrides — appended after templates so they take precedence
+	if [[ "$DARK" == "true" ]]; then
+		cat >> "$HEADER" <<-DARKEOF
+			\renewcommand{\qrCodeName}{qr-code-light}
+			\renewcommand{\darkSuffix}{_dark}
+			\renewcommand{\qrActionColor}{black}
+			\usepackage[pagecolor=black]{pagecolor}
+			\pagecolor{black}
+			\color{white}
+			\definecolor{inlinecode}{HTML}{333333}
+			\definecolor{linequote}{HTML}{1A1A1A}
+			\definecolor{backquote}{HTML}{1A1A1A}
+		DARKEOF
+	fi
 
 	# ------------------------------------------------------------------
 	# Assemble pandoc template

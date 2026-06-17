@@ -4,9 +4,9 @@
 \newcommand{\imgNode}[6]{
     \node[anchor=#1] at ([xshift=#2,yshift=#3]current page.#1){
         \ifstrempty{#6}{
-            \includegraphics[height=#4]{tools/pdf/images/#5.png}
+            \includegraphics[height=#4]{tools/pdf/images/#5\darkSuffix.png}
         }{
-            \href{#6}{\includegraphics[height=#4]{tools/pdf/images/#5.png}}
+            \href{#6}{\includegraphics[height=#4]{tools/pdf/images/#5\darkSuffix.png}}
         }
     };
 }
@@ -39,29 +39,41 @@
                 \def\imgDir{-ltr}
                 \def\qrActionX{2.10cm}
             }
-            % Photo
-            \imgNode{\anchor}{\shift1.90cm}{-2.00cm}{3.50cm}{profile-photo}{}
-            % QR Code
-            \imgNode{\anchorOp}{\shiftOp1.80cm}{-2.00cm}{3.50cm}{qr-frame\imgDir}{\qrLink}
-            \imgNode{\anchorOp}{\shiftOp1.95cm}{-2.20cm}{2.40cm}{\qrCodeName}{}
+            % Photo (no _dark variant)
+            \begingroup\def\darkSuffix{}%
+            \imgNode{\anchor}{\shift1.90cm}{-2.00cm}{3.50cm}{profile-photo}{}%
+            \endgroup
+            % QR Code (frame: single blue version; code: \qrCodeName picks light/dark variant)
+            \begingroup\def\darkSuffix{}%
+            \imgNode{\anchorOp}{\shiftOp1.80cm}{-2.00cm}{3.50cm}{qr-frame\imgDir}{\qrLink}%
+            \imgNode{\anchorOp}{\shiftOp1.95cm}{-2.20cm}{2.40cm}{\qrCodeName}{}%
+            \endgroup
             \node[anchor=\anchorOp, text width=1.42cm, minimum height=0.60cm, align=center] at ([xshift=\shiftOp\qrActionX,yshift=-4.92cm]current page.\anchorOp){
-                \fontsize{\qrActionSize}{10}\selectfont\bfseries \textcolor{white}{\ifdef{\rtl}{\RL{\qrActionName}}{\qrActionName}}
+                \fontsize{\qrActionSize}{10}\selectfont\bfseries \textcolor{\qrActionColor}{\ifdef{\rtl}{\RL{\qrActionName}}{\qrActionName}}
             };
             % Name & Job Title
             \txtNode{\anchor}{\shift5.90cm}{-2.25cm}{\LARGE \textbf{\fullName}}{}
             \txtNode{\anchor}{\shift5.90cm}{-3.05cm}{\textcolor{cyan}{\rule{8.50cm}{1pt}}}{}
             \txtNode{\anchor}{\shift5.90cm}{-3.30cm}{\large \textbf{\jobTitle}}{}
-            % Residence Country
-            \imgNode{\anchor}{\shift5.90cm}{-4.50cm}{0.35cm}{home-icon}{}
+            % Residence Country (icons always use original colors)
+            \begingroup\def\darkSuffix{}%
+            \imgNode{\anchor}{\shift5.90cm}{-4.50cm}{0.35cm}{home-icon}{}%
+            \endgroup
             \txtNode{\anchor}{\shift6.40cm}{-4.52cm}{\residenceCountry}{}
             % Birthdate
-            \imgNode{\anchor}{\shift10.40cm}{-4.50cm}{0.35cm}{birthday-icon}{}
+            \begingroup\def\darkSuffix{}%
+            \imgNode{\anchor}{\shift10.40cm}{-4.50cm}{0.35cm}{birthday-icon}{}%
+            \endgroup
             \txtNode{\anchor}{\shift10.90cm}{-4.52cm}{\birthDate}{}
             % Email Address
-            \imgNode{\anchor}{\shift5.90cm}{-5.10cm}{0.35cm}{email-icon}{}
+            \begingroup\def\darkSuffix{}%
+            \imgNode{\anchor}{\shift5.90cm}{-5.10cm}{0.35cm}{email-icon}{}%
+            \endgroup
             \txtNode{\anchor}{\shift6.40cm}{-5.12cm}{\emailAddress}{mailto:\emailAddress}
             % Phone Number
-            \imgNode{\anchor}{\shift10.40cm}{-5.10cm}{0.35cm}{phone-icon}{}
+            \begingroup\def\darkSuffix{}%
+            \imgNode{\anchor}{\shift10.40cm}{-5.10cm}{0.35cm}{phone-icon}{}%
+            \endgroup
             \txtNode{\anchor}{\shift10.90cm}{-5.12cm}{\phoneNumber}{}
         \fi
     \end{tikzpicture}
