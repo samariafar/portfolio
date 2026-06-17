@@ -32,4 +32,54 @@
     {%- endif %}
     {{ page.content | safe }}
 </article>
+{%- if page.extra.mermaid %}
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+    (function () {
+        function setup() {
+            document.querySelectorAll('pre > code[data-lang="mermaid"]').forEach(function (code) {
+                var pre = code.parentElement;
+                var newPre = document.createElement('pre');
+                newPre.className = 'mermaid';
+                newPre.textContent = code.textContent;
+                pre.replaceWith(newPre);
+            });
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'base',
+                themeCSS: 'text[font-weight="bold"][font-size="4ex"] { fill: #cccccc !important; } g.lineWrapper line { stroke: #aaaaaa !important; }',
+                themeVariables: {
+                    lineColor: '#aaaaaa',
+                    commitLabelColor: '#cccccc',
+                    signalColor: '#aaaaaa',
+                    signalTextColor: '#cccccc',
+                    actorLineColor: '#aaaaaa',
+                    actorBorder: '#aaaaaa',
+                    noteBorderColor: '#aaaaaa',
+                    labelBoxBorderColor: '#aaaaaa',
+                    quadrantTitleFill: '#cccccc',
+                    quadrant1TextFill: '#666666',
+                    quadrant2TextFill: '#666666',
+                    quadrant3TextFill: '#666666',
+                    quadrant4TextFill: '#666666',
+                    quadrantXAxisTextFill: '#cccccc',
+                    quadrantYAxisTextFill: '#cccccc',
+                    titleColor: '#cccccc',
+                    sectionTitleColor: '#cccccc',
+                    taskTextColor: '#cccccc',
+                    taskTextDarkColor: '#cccccc',
+                    taskTextLightColor: '#cccccc',
+                    gridColor: '#aaaaaa'
+                }
+            });
+            mermaid.run();
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setup);
+        } else {
+            setup();
+        }
+    })();
+</script>
+{%- endif %}
 {%- endblock -%}
