@@ -12,6 +12,9 @@
 # Builds
 /public/
 /static/processed_images/
+/static/*.pdf
+/tools/pdf/head.tex
+/tools/pdf/template.tex
 
 # Misc.
 .DS_Store

@@ -1,0 +1,46 @@
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% Page footer — always show "X/Y" so single-page PDFs read as "1/1"
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\footnotesize\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Header sizes
+\titleformat*{\subparagraph}{\fontSizeLineHeight{0.83em}\bfseries}
+\titleformat*{\paragraph}{\fontSizeLineHeight{1em}\bfseries}
+\titleformat*{\subsubsection}{\fontSizeLineHeight{1.17em}\bfseries}
+\titleformat*{\subsection}{\fontSizeLineHeight{1.5em}\bfseries}
+\titleformat*{\section}{\fontSizeLineHeight{2em}\bfseries}
+
+% Inline-code style
+\definecolor{inlinecode}{HTML}{F4F4F4}
+
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{
+    \colorbox{inlinecode}{\oldtexttt{\footnotesize #1}}
+}
+
+% Blockquote style
+\definecolor{linequote}{HTML}{FFFFFF}
+\definecolor{backquote}{HTML}{FFFFFF}
+\definecolor{bordercolor}{HTML}{00B7EB}
+
+\newtcolorbox{myquote}[1][]{
+    enhanced,
+    breakable,
+    size=minimal,
+    boxsep=10pt,
+    boxrule=0pt,
+    frame hidden,
+    sharp corners=all,
+    colback=backquote,
+    borderline west={2pt}{0pt}{bordercolor},
+    fontupper=\small,
+    #1
+}
+
+\renewenvironment{quote}{\begin{myquote}}{\end{myquote}}

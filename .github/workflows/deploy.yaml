@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
   pages: write
   id-token: write
 
@@ -29,10 +30,104 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  # Build & push the resume-PDF generator image to GHCR only when its
+  # Dockerfile changes. Tag is content-addressed (sha-<hash-of-Dockerfile>),
+  # so subsequent runs detect the existing image via `docker manifest inspect`
+  # and skip the build entirely. Local `make resume` builds untagged images
+  # under a different name and never touches the registry.
+  resume-image:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          sparse-checkout: tools/pdf/Dockerfile
+          sparse-checkout-cone-mode: false
+
+      - name: Compute content-addressed tag
+        id: tag
+        run: |
+          HASH=$(sha256sum tools/pdf/Dockerfile | cut -c1-12)
+          IMAGE="ghcr.io/${{ github.repository }}/pdf-builder"
+          echo "tag=${IMAGE}:sha-${HASH}" >> "$GITHUB_OUTPUT"
+          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check whether image already exists
+        id: check
+        run: |
+          if docker manifest inspect "${{ steps.tag.outputs.tag }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Docker Buildx
+        if: steps.check.outputs.exists == 'false'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push image
+        if: steps.check.outputs.exists == 'false'
+        uses: docker/build-push-action@v6
+        with:
+          context: tools/pdf
+          push: true
+          tags: |
+            ${{ steps.tag.outputs.tag }}
+            ${{ steps.tag.outputs.image }}:latest
+          cache-from: type=registry,ref=${{ steps.tag.outputs.image }}:latest
+          cache-to: type=inline
+
+  # Generate resume PDFs from the Zola markdown sources, using the cached
+  # GHCR image. Outputs land in static/ and are passed downstream as an
+  # artifact so the deploy job can drop them into static/ before zola build.
+  build-pdfs:
+    needs: resume-image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate PDFs
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}":/work \
+            -w /work \
+            "${{ needs.resume-image.outputs.tag }}" \
+            bash tools/pdf/generate.sh
+
+      - name: Upload generated PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: resume-pdfs
+          path: static/*.pdf
+          if-no-files-found: error
+          retention-days: 30
+
+  build-and-deploy:
+    needs: build-pdfs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download generated PDFs into static/
+        uses: actions/download-artifact@v4
+        with:
+          name: resume-pdfs
+          path: static/
 
       - name: Clone terminus theme
         run: git clone --depth 1 https://github.com/ebkalderon/terminus.git themes/terminus

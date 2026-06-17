@@ -1,0 +1,11 @@
+fullName: Sam Ariafar
+jobTitle: Senior Full Stack Engineer
+residenceCountry: Netherlands
+birthDate: 30/03/1992
+emailAddress: sam.ariafar@gmail.com
+phoneNumber: +31 6 12362322
+qr:
+  action:
+    name: Scan
+    size: 10
+  link: 'https://samariafar.dev'

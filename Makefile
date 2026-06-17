@@ -3,7 +3,9 @@ SHELL := $(shell command -v bash)
 .SILENT:
 .ONESHELL:
 .DEFAULT_GOAL := help
-.PHONY: help start
+.PHONY: help start resume
+
+PDF_IMAGE := pdf-builder
 
 help: ## Show available commands
 	echo -e "\nUsage:\n"
@@ -12,6 +14,10 @@ help: ## Show available commands
 
 start: ## Run the Zola dev server with live reload
 	zola serve
+
+resume: ## Build resume PDF(s) from content/resume/index*.md into static/
+	docker build -t $(PDF_IMAGE) tools/pdf
+	docker run --rm --user "$$(id -u):$$(id -g)" -v "$(CURDIR)":/work -w /work $(PDF_IMAGE) bash tools/pdf/generate.sh
 
 %:
 	:
